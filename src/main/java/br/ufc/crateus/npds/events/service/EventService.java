@@ -42,7 +42,8 @@ public class EventService {
 	}
 
 	public List<Event> getByName(String name){
-		List<Event> events = eventRepository.findByNameContainingIgnoreCase(name);
+		List<Event> events = eventRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrLocalizationContainingIgnoreCaseOrOrganizerContainingIgnoreCase(name,name,name,name);
 		return events;
 	}
+	
 }
