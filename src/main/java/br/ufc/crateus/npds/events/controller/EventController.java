@@ -1,6 +1,5 @@
 package br.ufc.crateus.npds.events.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +55,4 @@ public class EventController {
 		return new ResponseEntity<>(event, HttpStatus.OK);
 	}
 }
-
-
 
