@@ -11,5 +11,5 @@ import br.ufc.crateus.npds.events.models.Event;
 public interface EventRepository extends CrudRepository<Event, Integer>{
 	
 	List<Event> findByNameContainingIgnoreCase(String name);
-
+	List<Event> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrLocalizationContainingIgnoreCaseOrOrganizerContainingIgnoreCase(String name, String description,String organizer,String localization );
 }
