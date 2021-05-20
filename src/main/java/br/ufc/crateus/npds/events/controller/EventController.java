@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.ufc.crateus.npds.events.controller.dto.EventDTO;
 import br.ufc.crateus.npds.events.exception.InvalidEndDateException;
 import br.ufc.crateus.npds.events.exception.RecordNotFoundException;
 import br.ufc.crateus.npds.events.models.Event;
+import br.ufc.crateus.npds.events.models.Schedule;
 import br.ufc.crateus.npds.events.service.EventService;
+import br.ufc.crateus.npds.events.service.ScheduleService;
 
 
 @RestController
@@ -26,18 +29,24 @@ public class EventController {
 	@Autowired
 	private EventService eventService;
 	
+	@Autowired
+	private ScheduleService scheduleService;
+	
 	@GetMapping
-	private ResponseEntity<List<Event>> getAll(@RequestParam(required = false) String name){
+	private ResponseEntity<List<Event>> getAll(@RequestParam(required = false) String name,
+			@RequestParam(required = false) int pageNumber,
+			@RequestParam(required = false) int pageSize){
 		
 		List<Event> events = null;
 		if(name == null) {
-			events = eventService.getAll();
+			events = eventService.getAll(pageNumber, pageSize);
 		}
 		else {
-			events = eventService.getByName(name);
+			events = eventService.getByName(name, pageNumber, pageSize);
 		}
 		
-		return new ResponseEntity<>(events, HttpStatus.OK);		
+		return new ResponseEntity<>(events, HttpStatus.OK);
+		//EventDTO.toDTOList(
 	}
 
 	@PostMapping
@@ -53,6 +62,25 @@ public class EventController {
 		Event event = eventService.getById(id);
 		
 		return new ResponseEntity<>(event, HttpStatus.OK);
+	}
+	
+	@PostMapping("/{id}/schedule")
+	private ResponseEntity<Schedule> insertSchedule(@RequestBody Schedule schedule, @PathVariable("id") Integer eventId) throws RecordNotFoundException{
+		
+		Schedule scheduleCreated = scheduleService.insert(schedule,eventId);
+		
+		return new ResponseEntity<>(scheduleCreated,HttpStatus.OK);
+	}
+	
+	@GetMapping("/{id}/schedule")
+	private ResponseEntity<List<Schedule>> getAllScheduleByEvent(
+				@PathVariable("id") Integer eventId,
+				@RequestParam Integer pageNumber,
+				@RequestParam Integer pageSize) throws RecordNotFoundException{
+		
+		List<Schedule> schedules =  scheduleService.getAllScheduleByEvent(eventId, pageNumber, pageSize);
+		
+		return new ResponseEntity<>(schedules,HttpStatus.OK);
 	}
 	
 }
