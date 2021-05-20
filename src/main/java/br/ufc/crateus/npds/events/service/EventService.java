@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.ufc.crateus.npds.events.exception.InvalidEndDateException;
@@ -17,9 +18,9 @@ public class EventService {
 	private EventRepository eventRepository;
 	
 	
-	public List<Event> getAll(){
+	public List<Event> getAll(int pageNumber, int pageSize){
 		
-		List<Event> events = (List<Event>) eventRepository.findAll();
+		List<Event> events = eventRepository.findAll(PageRequest.of(pageNumber, pageSize));
 		return events;
 	}
 	
@@ -41,8 +42,8 @@ public class EventService {
 		else throw new RecordNotFoundException();
 	}
 
-	public List<Event> getByName(String name){
-		List<Event> events = eventRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrLocalizationContainingIgnoreCaseOrOrganizerContainingIgnoreCase(name,name,name,name);
+	public List<Event> getByName(String query, int pageNumber, int pageSize){
+		List<Event> events = eventRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrLocalizationContainingIgnoreCaseOrOrganizerContainingIgnoreCase(query,query,query,query, PageRequest.of(pageNumber,pageSize));
 		return events;
 	}
 	
