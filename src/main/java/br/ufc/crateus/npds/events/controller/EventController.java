@@ -33,7 +33,7 @@ public class EventController {
 	private ScheduleService scheduleService;
 	
 	@GetMapping
-	private ResponseEntity<List<Event>> getAll(@RequestParam(required = false) String name,
+	private ResponseEntity<List<EventDTO>> getAll(@RequestParam(required = false) String name,
 			@RequestParam(required = false) int pageNumber,
 			@RequestParam(required = false) int pageSize){
 		
@@ -45,23 +45,23 @@ public class EventController {
 			events = eventService.getByName(name, pageNumber, pageSize);
 		}
 		
-		return new ResponseEntity<>(events, HttpStatus.OK);
+		return new ResponseEntity<>(EventDTO.toDTOList(events), HttpStatus.OK);
 		//EventDTO.toDTOList(
 	}
 
 	@PostMapping
-	private ResponseEntity<Event> insert(@RequestBody Event event) throws InvalidEndDateException{
+	private ResponseEntity<EventDTO> insert(@RequestBody Event event) throws InvalidEndDateException{
 		Event createdEvent = eventService.insert(event);
 		
-        return new ResponseEntity<Event>(createdEvent, HttpStatus.CREATED);
+        return new ResponseEntity<>(EventDTO.toDTO(createdEvent), HttpStatus.CREATED);
 	}
 	
 	@GetMapping(value = "/{id}")
-	private ResponseEntity<Event> getId(@PathVariable Integer id) throws RecordNotFoundException{
+	private ResponseEntity<EventDTO> getId(@PathVariable Integer id) throws RecordNotFoundException{
 		
 		Event event = eventService.getById(id);
 		
-		return new ResponseEntity<>(event, HttpStatus.OK);
+		return new ResponseEntity<>(EventDTO.toDTO(event), HttpStatus.OK);
 	}
 	
 	@PostMapping("/{id}/schedule")
