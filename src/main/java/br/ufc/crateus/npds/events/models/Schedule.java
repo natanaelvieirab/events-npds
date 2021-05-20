@@ -23,7 +23,7 @@ public class Schedule {
 	private Integer workload ;
 	
 	@ManyToOne
-	private Event event_id ;
+	private Event event ;
 
 	public Integer getId() {
 		return id;
@@ -97,12 +97,12 @@ public class Schedule {
 		this.workload = workload;
 	}
 
-	public Event getEvent_id() {
-		return event_id;
+	public Event getEvent() {
+		return event;
 	}
 
-	public void setEvent_id(Event event_id) {
-		this.event_id = event_id;
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 	
 	
