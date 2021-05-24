@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.ufc.crateus.npds.events.controller.dto.EventDTO;
+import br.ufc.crateus.npds.events.exception.InvalidDateException;
 import br.ufc.crateus.npds.events.exception.InvalidEndDateException;
 import br.ufc.crateus.npds.events.exception.RecordNotFoundException;
 import br.ufc.crateus.npds.events.models.Event;
@@ -21,7 +23,7 @@ import br.ufc.crateus.npds.events.models.Schedule;
 import br.ufc.crateus.npds.events.service.EventService;
 import br.ufc.crateus.npds.events.service.ScheduleService;
 
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
@@ -65,7 +67,7 @@ public class EventController {
 	}
 	
 	@PostMapping("/{id}/schedule")
-	private ResponseEntity<Schedule> insertSchedule(@RequestBody Schedule schedule, @PathVariable("id") Integer eventId) throws RecordNotFoundException{
+	private ResponseEntity<Schedule> insertSchedule(@RequestBody Schedule schedule, @PathVariable("id") Integer eventId) throws RecordNotFoundException, InvalidEndDateException, InvalidDateException{
 		
 		Schedule scheduleCreated = scheduleService.insert(schedule,eventId);
 		
@@ -78,7 +80,7 @@ public class EventController {
 				@RequestParam Integer pageNumber,
 				@RequestParam Integer pageSize) throws RecordNotFoundException{
 		
-		List<Schedule> schedules =  scheduleService.getAllScheduleByEvent(eventId, pageNumber, pageSize);
+		List<Schedule> schedules =  scheduleService.getByEvent(eventId, pageNumber, pageSize);
 		
 		return new ResponseEntity<>(schedules,HttpStatus.OK);
 	}
