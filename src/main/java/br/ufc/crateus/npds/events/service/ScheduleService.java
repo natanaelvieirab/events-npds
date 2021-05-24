@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import br.ufc.crateus.npds.events.exception.InvalidDateException;
+import br.ufc.crateus.npds.events.exception.InvalidEndDateException;
 import br.ufc.crateus.npds.events.exception.RecordNotFoundException;
 import br.ufc.crateus.npds.events.models.Event;
 import br.ufc.crateus.npds.events.models.Schedule;
@@ -21,32 +23,30 @@ public class ScheduleService {
 	
 
 	@Autowired
-	private EventRepository eventRepository;
+    private EventService eventService;
 
-	public Schedule insert(Schedule schedule, Integer eventId) throws RecordNotFoundException {
-		
-		Optional<Event> event =  eventRepository.findById(eventId);
-		
-		if(event.isEmpty()) {
-			throw new RecordNotFoundException();
-		}
-		
-		schedule.setEvent(event.get());
-		
-		Schedule scheduteCreated = scheduleRepository.save(schedule);
-		
-		return scheduteCreated;
-	}
+	public Schedule insert(Schedule schedule, Integer eventId) throws RecordNotFoundException,  InvalidEndDateException, InvalidDateException {
+        Event event = eventService.getById(eventId);
+        
+        schedule.setEvent(event);
+        
+        if(schedule.getEndDate().before(schedule.getBeginDate())){
+            throw new InvalidEndDateException();
+        }
+        
+        if((schedule.getBeginDate().after(event.getEndDate()) || schedule.getBeginDate().before(event.getBeginDate())) || (schedule.getEndDate().after(event.getEndDate()) || schedule.getEndDate().before(event.getBeginDate()))){
+            throw new InvalidDateException();
+        }
+        
+        return scheduleRepository.save(schedule);
+    }
 
-	public List<Schedule> getAllScheduleByEvent(Integer eventId,Integer pageNumber,Integer pageSize) throws RecordNotFoundException {
-		Optional<Event> event =  eventRepository.findById(eventId);
-		
-		if(event.isEmpty()) {
-			throw new RecordNotFoundException();
-		}		
-	
-		return scheduleRepository.findByEvent(event.get(),PageRequest.of(pageNumber, pageSize));
-	}
+    public List<Schedule> getByEvent(Integer eventId, int pageNumber, int pageSize) throws RecordNotFoundException {
+        Event event = eventService.getById(eventId);
+
+        return scheduleRepository.findByEvent(event, PageRequest.of(pageNumber, pageSize));
+    }
+
 
 	
 }
