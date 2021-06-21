@@ -32,7 +32,7 @@ public class JwtAuthenticationController {
 	public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
+		
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
@@ -42,8 +42,9 @@ public class JwtAuthenticationController {
 
 	private void authenticate(String username, String password) throws Exception {
 		try {
-			//authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 			System.out.println("Username: "+username+"; password: "+ password);
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {
